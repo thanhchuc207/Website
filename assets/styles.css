@@ -1,0 +1,151 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: url("/assets/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+.container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px 0;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav ul li {
+  margin: 0 20px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+nav ul li a:hover {
+  color: #ff6347;
+}
+
+.logo {
+  width: 50px;
+}
+
+.products-section {
+  text-align: center;
+  padding: 50px 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  margin: 50px;
+}
+
+.section-title span {
+  font-size: 50px;
+  text-transform: uppercase;
+  color: #ff6347;
+  padding: 10px;
+}
+
+.subtitle {
+  font-size: 18px;
+  margin: 10px 0 30px 0;
+}
+
+.product-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.product-card {
+  background: black;
+  padding: 20px;
+  width: 250px;
+  border: 2px solid white;
+  text-align: center;
+}
+
+.product-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ff6347;
+  margin: 0 auto 20px auto;
+}
+
+.matte {
+  background-color: #cb0d45;
+}
+.semi-gloss {
+  background-color: #cb0d45;
+}
+.high-gloss {
+  background-color: #cb0d45;
+}
+
+.product-card h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.product-card p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.explore {
+  text-decoration: none;
+  color: rgb(101, 101, 241);
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.explore:hover {
+  color: #ff6347;
+}
+
+footer {
+  background: rgba(0, 0, 0, 0.8);
+  text-align: center;
+  padding: 10px 0;
+  flex-shrink: 0;
+  grid-row-start: 3;
+}

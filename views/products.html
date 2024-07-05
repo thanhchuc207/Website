@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products List</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <style>
+      .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: none;
+        z-index: 1000;
+      }
+      .dialog-box {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        width: 400px;
+        max-width: 90%;
+        text-align: center;
+      }
+      .dialog-box h3 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+      }
+      .dialog-box input,
+      .dialog-box textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .dialog-box button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .dialog-box button#save-btn {
+        background-color: #28a745;
+        color: white;
+      }
+      .dialog-box button#cancel-btn {
+        background-color: #dc3545;
+        color: white;
+      }
+      .add-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        cursor: pointer;
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        color: #ddd;
+        transition: all 0.3s ease;
+      }
+      .add-card:hover {
+        border-color: #333;
+        color: #333;
+      }
+      .product-card {
+        position: relative;
+      }
+      .product-card .options {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+      .product-card .options button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px;
+        margin: 2px 0;
+        cursor: pointer;
+      }
+      .product-card .options button.delete {
+        background-color: #dc3545;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <header>
+        <nav>
+          <ul>
+            <li><a href="#" id="products-link">Products</a></li>
+            <li><a href="#">Discounts</a></li>
+            <li>
+              <div class="logo-container">
+                <a href="/"
+                  ><img src="/assets/logo.svg" alt="Logo" class="logo"
+                /></a>
+              </div>
+            </li>
+            <li><a href="#">Our Partners</a></li>
+            <li><a href="#">About Us</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main>
+        <section class="products-section">
+          <h1 class="section-title"><span>products</span></h1>
+          <p class="subtitle">Affordable quality, every time.</p>
+          <div class="product-cards" id="product-cards">
+            <div class="product-card add-card" id="add-card">
+              <div>+</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <p>© GEM PAINT CO</p>
+    </footer>
+
+    <div class="dialog-overlay" id="dialog-overlay">
+      <div class="dialog-box">
+        <h3 id="dialog-title">Edit Product</h3>
+        <input type="text" id="edit-name" placeholder="Name" />
+        <textarea id="edit-description" placeholder="Description"></textarea>
+        <input type="text" id="edit-type" placeholder="Type" />
+        <input type="number" id="edit-price" placeholder="Price" />
+        <button id="save-btn">Save</button>
+        <button id="cancel-btn">Cancel</button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/products")
+          .then((response) => response.json())
+          .then((products) => {
+            const productCards = document.getElementById("product-cards");
+            productCards.innerHTML =
+              '<div class="product-card add-card" id="add-card"><div>+</div></div>';
+
+            products.forEach((product) => {
+              const productCard = document.createElement("div");
+              productCard.className = "product-card";
+              productCard.innerHTML = `
+                            <div class="product-icon" style="background-color: #ff6347;"></div>
+                            <h2>${product.name.toUpperCase()}</h2>
+                            <p>${product.description}</p>
+                            <p>Type: ${product.type}</p>
+                            <p>Price: $${product.price}</p>
+                            <button class="explore" data-id="${
+                              product._id
+                            }">EXPLORE</button>
+                            <div class="options" style="display: none;">
+                                <button class="edit" data-id="${
+                                  product._id
+                                }">Edit</button>
+                                <button class="delete" data-id="${
+                                  product._id
+                                }">Delete</button>
+                            </div>
+                        `;
+              productCards.appendChild(productCard);
+            });
+
+            document.querySelectorAll(".explore").forEach((button) => {
+              button.addEventListener("click", (event) => {
+                const options = event.target.nextElementSibling;
+                options.style.display =
+                  options.style.display === "none" ? "block" : "none";
+              });
+            });
+
+            document.querySelectorAll(".edit").forEach((button) => {
+              button.addEventListener("click", (event) => {
+                const id = event.target.dataset.id;
+                const product = products.find((p) => p._id === id);
+                document.getElementById("dialog-title").textContent =
+                  "Edit Product";
+                document.getElementById("edit-name").value = product.name;
+                document.getElementById("edit-description").value =
+                  product.description;
+                document.getElementById("edit-type").value = product.type;
+                document.getElementById("edit-price").value = product.price;
+                document.getElementById("save-btn").dataset.id = id;
+                document.getElementById("save-btn").dataset.action = "edit";
+                document.getElementById("dialog-overlay").style.display =
+                  "flex";
+              });
+            });
+
+            document.querySelectorAll(".delete").forEach((button) => {
+              button.addEventListener("click", (event) => {
+                const id = event.target.dataset.id;
+                fetch(`/api/products/${id}`, { method: "DELETE" })
+                  .then((response) => {
+                    if (response.ok) {
+                      const productCard = event.target.closest(".product-card");
+                      productCard.remove();
+                    } else {
+                      alert("Error deleting product");
+                    }
+                  })
+                  .catch((error) =>
+                    console.error("Error deleting product:", error)
+                  );
+              });
+            });
+
+            document
+              .getElementById("add-card")
+              .addEventListener("click", () => {
+                document.getElementById("dialog-title").textContent =
+                  "Add Product";
+                document.getElementById("edit-name").value = "";
+                document.getElementById("edit-description").value = "";
+                document.getElementById("edit-type").value = "";
+                document.getElementById("edit-price").value = "";
+                document.getElementById("save-btn").dataset.action = "add";
+                document.getElementById("dialog-overlay").style.display =
+                  "flex";
+              });
+          })
+          .catch((error) => console.error("Error fetching products:", error));
+      });
+
+      document.getElementById("save-btn").addEventListener("click", () => {
+        const action = document.getElementById("save-btn").dataset.action;
+        const name = document.getElementById("edit-name").value;
+        const description = document.getElementById("edit-description").value;
+        const type = document.getElementById("edit-type").value;
+        const price = parseFloat(document.getElementById("edit-price").value);
+
+        if (action === "edit") {
+          const id = document.getElementById("save-btn").dataset.id;
+          fetch(`/api/products/${id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, description, type, price }),
+          })
+            .then((response) => response.json())
+            .then((updatedProduct) => {
+              const productCard = document
+                .querySelector(`.product-card .edit[data-id="${id}"]`)
+                .closest(".product-card");
+              productCard.querySelector("h2").textContent =
+                updatedProduct.name.toUpperCase();
+              productCard.querySelector("p").textContent =
+                updatedProduct.description;
+              productCard.querySelector(
+                "p:nth-of-type(2)"
+              ).textContent = `Type: ${updatedProduct.type}`;
+              productCard.querySelector(
+                "p:nth-of-type(3)"
+              ).textContent = `Price: $${updatedProduct.price}`;
+              document.getElementById("dialog-overlay").style.display = "none";
+            })
+            .catch((error) => console.error("Error updating product:", error));
+        } else if (action === "add") {
+          fetch(`/api/products`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, description, type, price }),
+          })
+            .then((response) => response.json())
+            .then((newProduct) => {
+              const productCard = document.createElement("div");
+              productCard.className = "product-card";
+              productCard.innerHTML = `
+                            <div class="product-icon" style="background-color: #ff6347;"></div>
+                            <h2>${newProduct.name.toUpperCase()}</h2>
+                            <p>${newProduct.description}</p>
+                            <p>Type: ${newProduct.type}</p>
+                            <p>Price: $${newProduct.price}</p>
+                            <button class="explore" data-id="${
+                              newProduct._id
+                            }">EXPLORE</button>
+                            <div class="options" style="display: none;">
+                                <button class="edit" data-id="${
+                                  newProduct._id
+                                }">Edit</button>
+                                <button class="delete" data-id="${
+                                  newProduct._id
+                                }">Delete</button>
+                            </div>
+                        `;
+              document.getElementById("product-cards").appendChild(productCard);
+              document.getElementById("dialog-overlay").style.display = "none";
+            })
+            .catch((error) => console.error("Error adding product:", error));
+        }
+      });
+
+      document.getElementById("cancel-btn").addEventListener("click", () => {
+        document.getElementById("dialog-overlay").style.display = "none";
+      });
+    </script>
+  </body>
+</html>
